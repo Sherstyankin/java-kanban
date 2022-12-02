@@ -1,8 +1,10 @@
+package taskmanager.model;
+
 public class Subtask extends Task {
     private final Integer epicId;
 
-    public Subtask(String taskName, String content, String status, Integer epicId) {
-        super(taskName, content, status);
+    public Subtask(String taskName, String content, Integer epicId) {
+        super(taskName, content);
         this.epicId = epicId;
     }
 

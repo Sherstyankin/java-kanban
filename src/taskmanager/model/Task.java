@@ -1,13 +1,19 @@
+package taskmanager.model;
+
+import taskmanager.enums.Status;
+
+import java.util.Objects;
+
 public class Task {
     private String taskName;
     private String content;
     private Integer id;
-    private String status;
+    private Status status;
 
-    public Task(String taskName, String content, String status) {
+    public Task(String taskName, String content) {
         this.taskName = taskName;
         this.content = content;
-        this.status = status;
+        this.status = Status.NEW;
     }
 
     public String getTaskName() {
@@ -34,11 +40,11 @@ public class Task {
         this.id = id;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -50,5 +56,18 @@ public class Task {
                 ", id=" + id +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(taskName, task.taskName) && Objects.equals(content, task.content) && Objects.equals(id, task.id) && status == task.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskName, content, id, status);
     }
 }
