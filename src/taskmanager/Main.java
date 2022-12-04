@@ -63,7 +63,6 @@ public class Main {
         //Delete 1 task and 1 epic
         manager.deleteByTaskId(task1.getId());
         manager.deleteByEpicId(epicWith2Subtask.getId());
-        manager.deleteBySubtaskId(subtask3.getId());
 
         //Read tasks, epics and subtasks
         System.out.println(manager.getTaskList());
