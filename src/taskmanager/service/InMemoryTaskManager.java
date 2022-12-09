@@ -1,15 +1,18 @@
 package taskmanager.service;
 
-import taskmanager.model.Epic;
 import taskmanager.enums.Status;
+import taskmanager.model.Epic;
 import taskmanager.model.Subtask;
 import taskmanager.model.Task;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
-public class Manager {
+
+
+public class InMemoryTaskManager implements TaskManager  {
+    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
     private int id;
     public int getId() {
         setId(++id);
@@ -19,16 +22,18 @@ public class Manager {
         this.id = id;
     }
 
-    HashMap<Integer, Task> tasks = new HashMap<>();
-    HashMap<Integer, Epic> epics = new HashMap<>();
-    HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+
 
     // taskmanager.model.Task methods
+    @Override
     public void addTask(Task task) {
         task.setId(getId());
         tasks.put(task.getId(), task);
     }
-
+    @Override
     public List<Task> getTaskList() {
         List<Task> taskList = new ArrayList<>();
         for (Integer key : tasks.keySet()) {
@@ -36,16 +41,17 @@ public class Manager {
         }
         return taskList;
     }
-
+    @Override
     public Task getTaskById(int id) {
+        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
-
+    @Override
     public void deleteAllTasks() {
         tasks.clear();
         System.out.println("Все задания удалены!");
     }
-
+    @Override
     public void deleteByTaskId(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
@@ -53,7 +59,7 @@ public class Manager {
             System.out.println("Задачи под ID: " + id + " нет в списке");
         }
     }
-
+    @Override
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
     }
@@ -61,11 +67,12 @@ public class Manager {
 
 
     // taskmanager.model.Epic methods
+    @Override
     public void addEpic(Epic epic) {
         epic.setId(getId());
         epics.put(epic.getId(), epic);
     }
-
+    @Override
     public List<Epic> getEpicList() {
         List<Epic> epicList = new ArrayList<>();
         for (Integer key : epics.keySet()) {
@@ -73,28 +80,29 @@ public class Manager {
         }
         return epicList;
     }
-
+    @Override
     public Epic getEpicById(int id) {
+        historyManager.add(epics.get(id));
         return epics.getOrDefault(id, null);
     }
-
+    @Override
     public void deleteAllEpics() {
         epics.clear();
         subtasks.clear();
         System.out.println("Все эпики удалены!");
     }
-
+    @Override
     public void deleteByEpicId(int id) {
         if (epics.containsKey(id)) {
             for (Subtask sub : epics.get(id).getSubtasksList()) {
-                    subtasks.remove(sub.getId()); // удаляем все subtasks из Map, которые лежат в этом эпике
-                }
+                subtasks.remove(sub.getId()); // удаляем все subtasks из Map, которые лежат в этом эпике
+            }
             epics.remove(id); // удаляем сам Epic из Map
         } else {
             System.out.println("Эпика под ID: " + id + " нет в списке");
         }
     }
-
+    @Override
     public void updateEpic(Epic epic) {
         epics.put(epic.getId(), epic);
     }
@@ -102,13 +110,14 @@ public class Manager {
 
 
     // taskmanager.model.Subtask methods
+    @Override
     public void addSubtask(Subtask subtask) {
         subtask.setId(getId());
         epics.get(subtask.getEpicId()).getSubtasksList().add(subtask);
         subtasks.put(subtask.getId(), subtask);
         updateEpicStatus(subtask.getEpicId());
     }
-
+    @Override
     public List<Subtask> getSubtaskList() {
         List<Subtask> subtaskList = new ArrayList<>();
         for (Integer key : subtasks.keySet()) {
@@ -116,11 +125,12 @@ public class Manager {
         }
         return subtaskList;
     }
-
+    @Override
     public Subtask getSubtaskById(int id) {
+        historyManager.add(subtasks.get(id));
         return subtasks.getOrDefault(id, null);
     }
-
+    @Override
     public void deleteAllSubtasks() {
         subtasks.clear();
         for (Integer key : epics.keySet()) {
@@ -129,7 +139,7 @@ public class Manager {
         }
         System.out.println("Все подзадачи удалены!");
     }
-
+    @Override
     public void deleteBySubtaskId(int id) {
         if (subtasks.containsKey(id)) {
             for (Subtask sub : epics.get(subtasks.get(id).getEpicId()).getSubtasksList()) {
@@ -144,7 +154,7 @@ public class Manager {
             System.out.println("Задачи под ID: " + id + " нет в списке");
         }
     }
-
+    @Override
     public void updateSubtask(Subtask subtask) {
         // Обновляем subtask в SubtasksList
         for (Subtask sub : epics.get(subtask.getEpicId()).getSubtasksList()) {
@@ -157,7 +167,7 @@ public class Manager {
         subtasks.put(subtask.getId(), subtask); // обновляем subtask в Map
         updateEpicStatus(subtask.getEpicId());
     }
-
+    @Override
     public List<Subtask> getSubtaskListByEpic(Integer epicId) {
         return epics.get(epicId).getSubtasksList();
     }
@@ -168,7 +178,7 @@ public class Manager {
                 return false;
             }
         }
-    return true;
+        return true;
     }
 
     public void updateEpicStatus(int id) {
@@ -184,3 +194,4 @@ public class Manager {
         }
     }
 }
+
