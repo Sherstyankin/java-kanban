@@ -12,7 +12,7 @@ import java.util.List;
 
 
 public class InMemoryTaskManager implements TaskManager  {
-    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    HistoryManager historyManager = Managers.getDefaultHistory();
     private int id;
     public int getId() {
         setId(++id);
@@ -48,6 +48,9 @@ public class InMemoryTaskManager implements TaskManager  {
     }
     @Override
     public void deleteAllTasks() {
+        for (Integer key : tasks.keySet()) {
+            historyManager.remove(key);
+        }
         tasks.clear();
         System.out.println("Все задания удалены!");
     }
@@ -55,6 +58,7 @@ public class InMemoryTaskManager implements TaskManager  {
     public void deleteByTaskId(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
+            historyManager.remove(id);
         } else {
             System.out.println("Задачи под ID: " + id + " нет в списке");
         }
@@ -87,7 +91,13 @@ public class InMemoryTaskManager implements TaskManager  {
     }
     @Override
     public void deleteAllEpics() {
+        for (Integer key : epics.keySet()) {
+            historyManager.remove(key);
+        }
         epics.clear();
+        for (Integer key : subtasks.keySet()) {
+            historyManager.remove(key);
+        }
         subtasks.clear();
         System.out.println("Все эпики удалены!");
     }
@@ -96,8 +106,10 @@ public class InMemoryTaskManager implements TaskManager  {
         if (epics.containsKey(id)) {
             for (Subtask sub : epics.get(id).getSubtasksList()) {
                 subtasks.remove(sub.getId()); // удаляем все subtasks из Map, которые лежат в этом эпике
+                historyManager.remove(sub.getId()); // удаляем subtasks из истории
             }
             epics.remove(id); // удаляем сам Epic из Map
+            historyManager.remove(id); // удаляем epic из истории
         } else {
             System.out.println("Эпика под ID: " + id + " нет в списке");
         }
@@ -132,6 +144,9 @@ public class InMemoryTaskManager implements TaskManager  {
     }
     @Override
     public void deleteAllSubtasks() {
+        for (Integer key : subtasks.keySet()) {
+            historyManager.remove(key);
+        }
         subtasks.clear();
         for (Integer key : epics.keySet()) {
             epics.get(key).getSubtasksList().clear(); // очищаем у всех эпиков SubtasksList
@@ -150,6 +165,7 @@ public class InMemoryTaskManager implements TaskManager  {
             }
             updateEpicStatus(subtasks.get(id).getEpicId());
             subtasks.remove(id); // удаляем из Map
+            historyManager.remove(id); // удаляем из истории
         } else {
             System.out.println("Задачи под ID: " + id + " нет в списке");
         }
@@ -192,6 +208,9 @@ public class InMemoryTaskManager implements TaskManager  {
         } else {
             epics.get(id).setStatus(Status.IN_PROGRESS);
         }
+    }
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 }
 

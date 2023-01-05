@@ -34,4 +34,5 @@ public interface TaskManager {
     void deleteBySubtaskId(int id);
     void updateSubtask(Subtask subtask);
     List<Subtask> getSubtaskListByEpic(Integer epicId);
+    List<Task> getHistory();
 }
