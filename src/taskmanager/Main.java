@@ -27,7 +27,7 @@ public class Main {
         taskManager.addEpic(epicWith3Subtask);
         taskManager.addEpic(epicWithoutSubtask);
 
-        //Create 2 subtasks for epicWith3Subtask
+        //Create 3 subtasks for epicWith3Subtask
         Subtask subtask1 = new Subtask("Выбрать агенство", "Оценить по рейтингу и цене",
                 epicWith3Subtask.getId());
         Subtask subtask2 = new Subtask("Отправить заявку", "Прикрепить документы",

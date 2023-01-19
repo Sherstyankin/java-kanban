@@ -1,14 +1,17 @@
 package taskmanager.model;
 
 import taskmanager.enums.Status;
+import taskmanager.enums.TaskType;
 
 import java.util.Objects;
 
 public class Task {
-    private String taskName;
-    private String content;
     private Integer id;
+    private final TaskType type = TaskType.TASK;
+    private String taskName;
     private Status status;
+    private String content;
+
 
     public Task(String taskName, String content) {
         this.taskName = taskName;
@@ -46,6 +49,13 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+    public TaskType getType() {
+        return type;
+    }
+
+    public String toStringForFile() {
+        return getId() + "," + getType() + "," + getTaskName() + "," + getStatus() + "," + getContent() + "\n";
     }
 
     @Override
