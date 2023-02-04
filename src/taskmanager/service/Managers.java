@@ -1,17 +1,22 @@
 package taskmanager.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class Managers {
-    private Managers() {}
+    private Managers() {
+    }
+
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
+
     public static TaskManager getFileBackedTasksManager() {
         try {
-            return new FileBackedTasksManager(Files.createFile(Paths.get("./resources/fileToSave.csv")));
+            return new FileBackedTasksManager(Files.createFile(Path.of("./resources/fileToSave.csv")));
         } catch (IOException exception) {
             return FileBackedTasksManager.loadFromFile(Paths.get("./resources/fileToSave.csv"));
         }

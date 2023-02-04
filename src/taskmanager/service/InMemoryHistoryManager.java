@@ -8,22 +8,29 @@ import java.util.*;
 public class InMemoryHistoryManager implements HistoryManager {
 
     private final CustomLinkedList history = new CustomLinkedList();
+
     @Override
     public List<Task> getHistory() {
         return history.getTasks(history.head);
     }
+
     @Override
     public void add(Task task) {
-         if (history.getNodesMap().containsKey(task.getId())) {
-            remove(task.getId());
+        if (task != null) {
+            if (history.getNodesMap().containsKey(task.getId())) {
+                remove(task.getId());
+            }
+            history.linkLast(task);
+        } else {
+            System.out.println("Задача не передана.");
         }
-
-        history.linkLast(task);
     }
+
     @Override
     public void remove(int id) {
-        history.removeNode(history.getNodesMap().get(id));
+        history.removeNode(history.getNodesMap().getOrDefault(id, null));
     }
+
     private static class CustomLinkedList {
 
         private final Map<Integer, Node<Task>> nodesById = new HashMap<>();
@@ -35,6 +42,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         public Map<Integer, Node<Task>> getNodesMap() {
             return nodesById;
         }
+
         public void linkLast(Task task) {
             final Node<Task> oldTail = tail;
             final Node<Task> newNode = new Node<>(oldTail, task, null);
@@ -59,8 +67,11 @@ public class InMemoryHistoryManager implements HistoryManager {
                 } else {
                     tail = node.prev;
                 }
+            } else {
+                System.out.println("Узел для удаления не найден, так как передан неверный id");
             }
         }
+
         public List<Task> getTasks(Node<Task> head) {
             List<Task> historyArrayList = new ArrayList<>();
             Node<Task> temp = head;

@@ -10,9 +10,7 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-
-        TaskManager taskManager = Managers.getDefault();
-
+/*        TaskManager taskManager = Managers.getDefault();
         //Create 2 tasks
         Task task1 = new Task("Переезд1", "Сбор вещей1");
         Task task2 = new Task("Переезд2", "Сбор вещей2");
@@ -76,6 +74,6 @@ public class Main {
         System.out.println();
 
         taskManager.deleteByEpicId(epicWith3Subtask.getId());
-        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.getHistory());*/
     }
 }
