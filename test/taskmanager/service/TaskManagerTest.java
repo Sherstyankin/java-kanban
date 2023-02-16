@@ -287,7 +287,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void addSubtaskWithNullEpicIdTest() {
         Subtask subtask = new Subtask("Выбрать агенство", "Оценить по рейтингу и цене",
                 60, LocalDateTime.of(2023, 2, 4, 14, 0),
-                null);
+                0);
         manager.addSubtask(subtask);
         boolean isListEmpty = manager.getSubtaskList().isEmpty(); // факт
         boolean expected = true; // ожидание
@@ -413,7 +413,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getSubtaskListByEpicIdNullTest() {
-        boolean isEmptyListReturned = manager.getSubtaskListByEpicId(null).isEmpty(); // факт
+        boolean isEmptyListReturned = manager.getSubtaskListByEpicId(0).isEmpty(); // факт
         assertTrue(isEmptyListReturned, "Лист не пуст");
     }
 

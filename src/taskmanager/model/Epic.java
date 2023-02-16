@@ -9,8 +9,8 @@ import java.util.Objects;
 public class Epic extends Task {
     private final List<Subtask> subtasksList;
     private static final TaskType type = TaskType.EPIC;
-    private long duration; // в минутах
-    private LocalDateTime startTime;
+    private long epicDuration; // в минутах
+    private LocalDateTime epicStartTime;
     private LocalDateTime endTime;
 
     public Epic(String taskName, String content, List<Subtask> subtasksList) {
@@ -20,25 +20,25 @@ public class Epic extends Task {
 
     @Override
     public long getDuration() {
-        this.duration = 0;
+        this.epicDuration = 0;
         for (Subtask subtask : subtasksList) {
-            this.duration += subtask.getDuration();
+            this.epicDuration += subtask.getDuration();
         }
-        return this.duration;
+        return this.epicDuration;
     }
 
     @Override
     public LocalDateTime getStartTime() {
         if (!subtasksList.isEmpty()) {
-            this.startTime = subtasksList.stream()
+            this.epicStartTime = subtasksList.stream()
                     .map(Task::getStartTime)
                     .filter(Objects::nonNull)
                     .min(LocalDateTime::compareTo)
                     .orElse(null);
         } else {
-            this.startTime = null;
+            this.epicStartTime = null;
         }
-        return this.startTime;
+        return this.epicStartTime;
     }
 
     @Override
@@ -83,8 +83,8 @@ public class Epic extends Task {
                 ", taskName='" + getTaskName() + '\'' +
                 ", content='" + getContent() + '\'' +
                 ", status='" + getStatus() + '\'' +
-                ", duration='" + getDuration() + '\'' +
-                ", startTime='" + getStartTime() + '\'' +
+                ", epicDuration='" + getDuration() + '\'' +
+                ", epicStartTime='" + getStartTime() + '\'' +
                 ", endTime='" + getEndTime() + '\'' +
                 '}';
     }
@@ -95,15 +95,15 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return duration == epic.duration &&
+        return epicDuration == epic.epicDuration &&
                 Objects.equals(subtasksList, epic.subtasksList) &&
-                Objects.equals(startTime, epic.startTime) &&
+                Objects.equals(epicStartTime, epic.epicStartTime) &&
                 Objects.equals(endTime, epic.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subtasksList, type, duration, startTime, endTime);
+        return Objects.hash(super.hashCode(), subtasksList, type, epicDuration, epicStartTime, endTime);
     }
 }
 

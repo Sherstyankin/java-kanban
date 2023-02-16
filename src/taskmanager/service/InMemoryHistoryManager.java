@@ -68,7 +68,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                     tail = node.prev;
                 }
             } else {
-                System.out.println("Узел для удаления не найден, так как передан неверный id");
+                System.out.println("Задачи нет в истории просмотров.");
             }
         }
 

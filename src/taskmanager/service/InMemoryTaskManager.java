@@ -7,11 +7,11 @@ import taskmanager.model.Task;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    final HistoryManager historyManager = Managers.getDefaultHistory();
+    transient HistoryManager historyManager = Managers.getDefaultHistory();
+    protected List<Integer> history = new ArrayList<>(); //доп поле для сериализации/десериализации истории
     private int id;
 
     private int getId() {
@@ -68,6 +68,7 @@ public class InMemoryTaskManager implements TaskManager {
             task.setId(getId());
             prioritizedTasks.add(task); // добавляем в сет, который сортирует по startTime
             tasks.put(task.getId(), task);
+            System.out.println("Задача добавлена.");
         }
     }
 
@@ -84,6 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         if (tasks.get(id) != null) {
             historyManager.add(tasks.get(id));
+            updateHistory();
         }
         return tasks.getOrDefault(id, null);
     }
@@ -96,8 +98,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task value : tasks.values()) {
             prioritizedTasks.remove(value); // удаление из сета всех тасков
         }
+        updateHistory();
         tasks.clear();
-        System.out.println("Все задания удалены!");
+        System.out.println("Все задачи удалены.");
     }
 
     @Override
@@ -106,6 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
             prioritizedTasks.remove(getTaskById(id)); // удаление из сета
             tasks.remove(id);
             historyManager.remove(id);
+            updateHistory();
         } else {
             System.out.println("Задачи под ID: " + id + " нет в списке");
         }
@@ -115,10 +119,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (isTimeNotCrossed(task) && !tasks.isEmpty() &&
                 tasks.getOrDefault(task.getId(), null) != null) {
+            prioritizedTasks.remove(tasks.get(task.getId())); // удаляем из сета задачу в тем же id
             tasks.put(task.getId(), task);
             prioritizedTasks.add(task); // добавили в сет
+            System.out.println("Задача обновлена.");
         } else {
-            System.out.println("Задача не обновлена");
+            System.out.println("Задача не обновлена.");
         }
     }
 
@@ -128,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void addEpic(Epic epic) {
         epic.setId(getId());
         epics.put(epic.getId(), epic);
+        System.out.println("Эпик добавлен.");
     }
 
     @Override
@@ -143,6 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int id) {
         if (epics.get(id) != null) {
             historyManager.add(epics.get(id));
+            updateHistory();
         }
         return epics.getOrDefault(id, null);
     }
@@ -159,8 +167,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask value : subtasks.values()) {
             prioritizedTasks.remove(value); // удаляем из сета
         }
+        updateHistory();
         subtasks.clear();
-        System.out.println("Все эпики удалены!");
+        System.out.println("Все эпики удалены.");
     }
 
     @Override
@@ -173,6 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
             epics.remove(id); // удаляем сам Epic из Map
             historyManager.remove(id); // удаляем epic из истории
+            updateHistory();
         } else {
             System.out.println("Эпика под ID: " + id + " нет в списке");
         }
@@ -182,8 +192,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic) {
         if (!epics.isEmpty() && epics.getOrDefault(epic.getId(), null) != null) {
             epics.put(epic.getId(), epic);
+            System.out.println("Эпик обновлен.");
         } else {
-            System.out.println("Эпик не обновлен!");
+            System.out.println("Эпик не обновлен.");
         }
     }
 
@@ -199,6 +210,7 @@ public class InMemoryTaskManager implements TaskManager {
             prioritizedTasks.add(subtask); // добавляем в сет, который сортирует по startTime
             subtasks.put(subtask.getId(), subtask);
             updateEpicStatus(subtask.getEpicId());
+            System.out.println("Подзадача добавлена.");
         }
     }
 
@@ -215,6 +227,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int id) {
         if (subtasks.get(id) != null) {
             historyManager.add(subtasks.get(id));
+            updateHistory();
         }
         return subtasks.getOrDefault(id, null);
     }
@@ -232,7 +245,8 @@ public class InMemoryTaskManager implements TaskManager {
             epics.get(key).getSubtasksList().clear(); // очищаем у всех эпиков SubtasksList
             epics.get(key).setStatus(Status.NEW); // всем эпикам присваиваем статус NEW
         }
-        System.out.println("Все подзадачи удалены!");
+        updateHistory();
+        System.out.println("Все подзадачи удалены.");
     }
 
     @Override
@@ -248,6 +262,7 @@ public class InMemoryTaskManager implements TaskManager {
             prioritizedTasks.remove(getSubtaskById(id)); // удаляем из сета
             subtasks.remove(id); // удаляем из Map
             historyManager.remove(id); // удаляем из истории
+            updateHistory();
         } else {
             System.out.println("Задачи под ID: " + id + " нет в списке");
         }
@@ -265,9 +280,13 @@ public class InMemoryTaskManager implements TaskManager {
                     break;
                 }
             }
+            prioritizedTasks.remove(subtasks.get(subtask.getId())); // удаляем из сета подзадачу в тем же id
             prioritizedTasks.add(subtask); // добавляем в сет
             subtasks.put(subtask.getId(), subtask); // обновляем subtask в Map
             updateEpicStatus(subtask.getEpicId());
+            System.out.println("Подзадача обновлена.");
+        } else {
+            System.out.println("Подзадача не обновлена.");
         }
     }
 
@@ -299,6 +318,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    private void updateHistory() {
+        for (Task task : getHistory()) {
+            history.add(task.getId());
+        }
+    }
+
     private boolean isAllStatusEqual(List<Subtask> subtasksList, Status status) {
         for (Subtask sub : subtasksList) {
             if (!sub.getStatus().equals(status)) {
@@ -313,15 +338,14 @@ public class InMemoryTaskManager implements TaskManager {
             return true;
         }
         for (Task existedTask : prioritizedTasks) {
-            if (existedTask.getStartTime() == null) {
+            // не проверяем задачи без указанного времени старта и не сравниваем с задачей, которую обновляем
+            if (existedTask.getStartTime() == null || Objects.equals(existedTask.getId(), task.getId())) {
                 continue;
             }
-            if (task.getStartTime().isBefore(existedTask.getStartTime()) &&
+            if (!(task.getStartTime().isBefore(existedTask.getStartTime()) &&
                     task.getEndTime().isBefore(existedTask.getStartTime()) ||
                     task.getStartTime().isAfter(existedTask.getEndTime()) &&
-                            task.getEndTime().isAfter(existedTask.getEndTime())) {
-                continue;
-            } else {
+                            task.getEndTime().isAfter(existedTask.getEndTime()))) {
                 System.out.println("Время выполнения новой задачи пересекается с уже созданной.\n" +
                         "Измените время и попробуйте создать заново.");
                 return false;
