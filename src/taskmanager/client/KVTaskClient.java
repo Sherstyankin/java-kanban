@@ -1,8 +1,6 @@
 package taskmanager.client;
 
-import taskmanager.server.KVServer;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -78,16 +76,5 @@ public class KVTaskClient {
             e.printStackTrace();
         }
         return json;
-    }
-
-    public static void main(String[] args) throws IOException {
-        new KVServer().start();
-        KVTaskClient client = new KVTaskClient(new URL("http://localhost:8080"));
-        client.getSave("sergey", "engineer");
-        String value = client.getLoad("sergey");
-        System.out.println(value);
-        client.getSave("sergey", "programmer");
-        value = client.getLoad("sergey");
-        System.out.println(value);
     }
 }

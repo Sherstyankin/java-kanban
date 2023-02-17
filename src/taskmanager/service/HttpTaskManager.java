@@ -3,17 +3,8 @@ package taskmanager.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import taskmanager.client.KVTaskClient;
-import taskmanager.model.Task;
-import taskmanager.server.HttpTaskServer;
-import taskmanager.server.KVServer;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 
 
 public class HttpTaskManager extends FileBackedTasksManager {
@@ -50,24 +41,5 @@ public class HttpTaskManager extends FileBackedTasksManager {
             }
         }
         return manager;
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        new KVServer().start();
-        new HttpTaskServer().start();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        Task task1 = new Task("Переезд1", "Сбор вещей1", 60,
-                LocalDateTime.of(2023, 2, 2, 13, 0));
-        URI url = URI.create("http://localhost:8078/tasks/task");
-        Gson gson = Managers.getDefaultGson();
-        String json = gson.toJson(task1);
-        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() == 200) {
-            System.out.println("Задача добавлена.");
-        } else {
-            System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
-        }
     }
 }

@@ -2,13 +2,10 @@ package taskmanager.server;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import taskmanager.model.Epic;
 import taskmanager.model.Subtask;
 import taskmanager.model.Task;
-import taskmanager.service.InMemoryTaskManager;
 import taskmanager.service.Managers;
 
 import java.io.IOException;
@@ -24,7 +21,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskServerTest {
-    private HttpTaskServer server;
+    private HttpTaskServer httpTaskServer;
+    private KVServer kvServer;
     private HttpClient client;
     private Gson gson = Managers.getDefaultGson();
     private Task task1;
@@ -33,9 +31,13 @@ class HttpTaskServerTest {
     private Epic epic2;
     private Subtask subtask1;
     private Subtask subtask2;
+
     @BeforeEach
     void init() {
-        server = new HttpTaskServer(new InMemoryTaskManager());
+        kvServer = new KVServer();
+        kvServer.start();
+        httpTaskServer = new HttpTaskServer(); // необходимый менеджер инициализируется внутри сервера
+        httpTaskServer.start();
         client = HttpClient.newHttpClient();
         task1 = new Task("Переезд1", "Сбор вещей1", 60, LocalDateTime.now());
         task2 = new Task("Переезд2", "Сбор вещей2", 30, LocalDateTime.now());
@@ -49,12 +51,14 @@ class HttpTaskServerTest {
         subtask2 = new Subtask("Отправить заявку", "Прикрепить документы",
                 0, null,
                 epic1.getId());
-        server.start();
     }
+
     @AfterEach
-    void stopServer() {
-        server.stop();
+    void stopKVServer() {
+        httpTaskServer.stop();
+        kvServer.stop();
     }
+
     @Test
     void addTaskEndpointTest() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8078/tasks/task");

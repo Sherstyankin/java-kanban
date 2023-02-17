@@ -11,3 +11,43 @@ T
 $test/taskmanager/model/TaskTest.java,d/6/d617671d49a4da3c71f0907954749f88dbd0261f
 H
 resources/fileToSave.csv,d/4/d49cf62dfb2a4ffbf5ea79a478f42a895217dc04
+R
+"src/taskmanager/model/Subtask.java,c/6/c61a369ec76acfc7b142abc07e281691e581e300
+O
+src/taskmanager/model/Node.java,b/1/b1307db82f9d586555096523330a406fdbcf112f
+O
+src/taskmanager/model/Task.java,5/1/510c3dd7046eedac10632d86af411218370db5c2
+d
+4src/taskmanager/exceptions/ManagerSaveException.java,b/c/bccfb6723828f4bef65bbe0193fd3aa971f2f5a1
+[
++src/taskmanager/service/HistoryManager.java,a/2/a26786ae930088b742ea29ac83ffce36cd4eb316
+X
+(src/taskmanager/service/TaskManager.java,3/0/30542bedbabd8dcca9e7aebe5df75a68f06a7794
+h
+8test/taskmanager/service/FileBackedTasksManagerTest.java,d/0/d04fcbad7ff1ddaf3004b77130de0c542d398f2e
+h
+8test/taskmanager/service/InMemoryHistoryManagerTest.java,b/e/bebff16a7641a30c8ddfe7165af8221a9c040245
+?
+java-kanban.iml,d/f/df5dcbbd3f931c7c23855ccec11732ab4c8544f2
+w
+G.idea/sonarlint/issuestore/d/4/d49cf62dfb2a4ffbf5ea79a478f42a895217dc04,e/9/e9b2f1bd13f6642caab293a8fa387c17e8b3f25d
+w
+G.idea/sonarlint/issuestore/2/6/26e10345b3a67c7a0d4d778d10c9fef0278dd56f,7/5/75e27ec6b2e0f85cdf32a155851abcbe37ce0bdc
+w
+G.idea/sonarlint/issuestore/d/6/d617671d49a4da3c71f0907954749f88dbd0261f,b/9/b97e6a1eb36b66916c887b959af5b55d6d8c6207
+w
+G.idea/sonarlint/issuestore/8/2/826c91d6103d972d118853c64c536fd34da4ac4c,5/3/53fe92ec8a3bd5b4096699427242e1998e1d250a
+N
+.idea/libraries/gson_2_9_0.xml,0/2/029650b3282cd1f60425c91dfbca85f872d242c9
+O
+src/taskmanager/model/Epic.java,2/2/2254981dc8f6a4371473e469fc5e675919244e4c
+c
+3src/taskmanager/service/FileBackedTasksManager.java,5/3/53ebb22f1fe847709ee96d8bd969e9ff7cc4a034
+e
+5test/taskmanager/service/InMemoryTaskManagerTest.java,9/d/9df8744b09b269f3a23c50fd52de4c2c5940ec5e
+a
+1src/taskmanager/adapter/LocalDateTimeAdapter.java,1/3/13d4671217dbc1b3438df784066c520388ad676e
+U
+%src/taskmanager/service/Managers.java,6/2/62b59e6fcdb690e1deb56d80619a50b15b90d916
+]
+-test/taskmanager/service/TaskManagerTest.java,c/d/cdd90637a5ab7c1d27a3cdf4d29503da060b3c6d

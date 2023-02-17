@@ -1,19 +1,29 @@
 package taskmanager;
 
+import com.google.gson.Gson;
+import taskmanager.client.KVTaskClient;
 import taskmanager.model.Epic;
 import taskmanager.model.Subtask;
 import taskmanager.model.Task;
+import taskmanager.server.HttpTaskServer;
 import taskmanager.server.KVServer;
 import taskmanager.service.HttpTaskManager;
 import taskmanager.service.Managers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 
 public class Main {
-    public static void main(String[] args) {
-        new KVServer().start();
+    public static void main(String[] args) throws IOException, InterruptedException {
+        KVServer server = new KVServer();
+        server.start();
 
         HttpTaskManager taskManager = (HttpTaskManager) Managers.getDefault();
 
@@ -92,5 +102,35 @@ public class Main {
         System.out.println(loadedManager.getSubtaskList());
         System.out.println();
         System.out.println(loadedManager.getHistory());
+
+        //Тестируем клиента отдельно
+        KVTaskClient client = new KVTaskClient(new URL("http://localhost:8080"));
+        client.getSave("sergey", "engineer");
+        String value = client.getLoad("sergey");
+        System.out.println(value);
+        client.getSave("sergey", "programmer");
+        value = client.getLoad("sergey");
+        System.out.println(value);
+        server.stop();
+
+        //Тестируем совместную работы HttpTaskServer и KVServer
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+        HttpTaskServer httpServer = new HttpTaskServer();
+        httpServer.start();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8078/tasks/task");
+        Gson gson = Managers.getDefaultGson();
+        String json = gson.toJson(task1);
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            System.out.println("Задача добавлена.");
+        } else {
+            System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+        }
+        kvServer.stop();
+        httpServer.stop();
     }
 }
